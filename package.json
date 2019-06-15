@@ -1,0 +1,46 @@
+{
+  "name": "pinp",
+  "amdName": "pinp",
+  "version": "0.0.0",
+  "description": "pinp is not packery",
+  "source": "src/index.js",
+  "main": "dist/pinp.js",
+  "module": "dist/pinp.m.js",
+  "unpkg": "dist/pinp.umd.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "start": "microbundle watch -f umd -o example --target web --compress false & light-server -s example -p 8080 -w example/**/*",
+    "build": "microbundle -f es,cjs --external all && microbundle -f umd --target web",
+    "test": "eslint src/**",
+    "deploy": "ghp example",
+    "preversion": "npm run build && git add dist",
+    "postversion": "git push && git push --tags && yarn deploy --force"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+git@github.com:arnaudjuracek/pinp.git"
+  },
+  "author": "Arnaud Juracek <arnaud.juracek@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/arnaudjuracek/pinp/issues"
+  },
+  "homepage": "https://github.com/arnaudjuracek/pinp#readme",
+  "dependencies": {
+    "draggabilly": "^2.2.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.18.0",
+    "eslint-config-standard": "^11.0.0-beta.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-node": "^6.0.0",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "ghp": "^1.1.4",
+    "light-server": "^2.4.0",
+    "microbundle": "^0.11.0"
+  },
+  "private": false
+}

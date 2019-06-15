@@ -1,0 +1,109 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>PINP | PINP is not packery</title>
+    <meta name="description" content="PINP is not packery">
+    <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,minimal-ui">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" />
+
+    <style type="text/css">
+      body {
+        background-color: #333;
+        font-family: monospace;
+      }
+
+      .container {
+        position: relative;
+        font-size: 0;;
+        user-select: none;
+        display: block;
+        min-width: 80%;
+        min-height: 80%;
+        border: 1px dotted white;
+        padding: 50px;
+      }
+
+      .draggable {
+        font-size: 20px;
+        display: inline-block;
+        background: white;
+        width: 100px;
+        height: 100px;
+        cursor: grab;
+      }
+
+      .draggable:active,
+      .draggable.is-dragging {
+        z-index: 999;
+        cursor: grabbing;
+        opacity: 0.8;
+      }
+
+      .toolbox {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="container">
+        <div class="draggable" style="width: 100px; height: 100px; background-color: rgb(142,44,163)"></div>
+        <div class="draggable" style="width: 200px; height: 200px; background-color: rgb(0,179,149)"></div>
+        <div class="draggable" style="width: 50px; height: 50px; background-color: rgb(255,244,155)"></div>
+        <div class="draggable" style="width: 200px; height: 200px; background-color: rgb(91,3,41)"></div>
+      </div>
+
+      <div class="toolbox">
+        <button id='addItem'>add</button>
+        <button id='removeItem'>remove</button>
+        <button id='update'>update</button>
+      </div>
+    </main>
+
+    <script src="pinp.umd.js"></script>
+    <script>
+      var step = 50
+      var grid = window.pinp({
+        container: '.container',
+        itemSelector: '.draggable',
+        grid: [step, step]
+      });
+
+      grid.update();
+
+      var container = document.querySelector('.container');
+      document.getElementById('addItem').addEventListener('click', addItem);
+      document.getElementById('removeItem').addEventListener('click', removeItem);
+      document.getElementById('update').addEventListener('click', grid.update);
+
+      function addItem () {
+        var colors = ['rgb(142,44,163)','rgb(172,50,193)','rgb(0,179,149)','rgb(44,229,198)','rgb(255,244,155)','rgb(254,254,218)','rgb(91,3,41)','rgb(152,11,63)'];
+        var containerRect = container.getBoundingClientRect();
+        var item = document.createElement('div');
+        item.classList = 'draggable';
+        item.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)]
+        item.style.width = roundTo(Math.random() * 300, step) + 'px';
+        item.style.height = roundTo(Math.random() * 300, step) + 'px';
+        item.style.left = roundTo(Math.random() * containerRect.width, step) + 'px';
+        item.style.top = roundTo(Math.random() * containerRect.height, step) + 'px';
+        container.appendChild(item);
+        grid.add(item);
+        grid.update();
+      }
+
+      function removeItem () {
+        var items = container.querySelectorAll('.draggable')
+        var index = Math.floor(Math.random() * items.length)
+        items[index].remove()
+        // ???: handle Item deletion
+        grid.update();
+      }
+
+      function roundTo (value, nearest) {
+        return Math.round(value / nearest) * nearest;
+      }
+    </script>
+  </body>
+</html>
