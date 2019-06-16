@@ -4,7 +4,6 @@ import Box from './abstractions/Box'
 import noop from './utils/noop'
 
 export default ({
-  boxSelector = '.pinp-box',
   container = '.pinp-container',
 
   debug = false,
@@ -18,9 +17,7 @@ export default ({
   willUpdate = noop,
   didUpdate = noop
 } = {}) => {
-  container = isDomElement(container)
-    ? container
-    : document.querySelector(container)
+  container = isDomElement(container) ? container : document.querySelector(container)
 
   const cluster = new Cluster([], {
     debug,
@@ -28,11 +25,6 @@ export default ({
     noOOB,
     pushBehavior
   })
-
-  const boxElements = container.querySelectorAll(boxSelector)
-  for (let i = 0; i < boxElements.length; i++) {
-    add(boxElements[i])
-  }
 
   const api = {
     add,
@@ -44,20 +36,19 @@ export default ({
 
   return api
 
-  function add (el) {
-    const box = new Box(el, { container, debug, grid })
+  function add (DomElement) {
+    const box = new Box(DomElement, { container, debug, grid })
 
-    box.dragInstance.on('dragStart', () => {
-      cluster.freeze()
-      window.requestAnimationFrame(cluster.pack)
-    })
+    box.dragInstance.on('dragStart', cluster.freeze)
 
     box.dragInstance.on('dragMove', () => {
-      willUpdate()
-      box.unfreeze()
-      // NOTE: forcing debug to `false` to avoid flooding the console
-      window.requestAnimationFrame(() => cluster.pack({ debug: false }))
-      didUpdate()
+      window.requestAnimationFrame(() => {
+        willUpdate()
+        // NOTE: forcing debug to `false` to avoid flooding the console
+        box.unfreeze()
+        cluster.pack({ debug: false })
+        didUpdate()
+      })
     })
 
     box.dragInstance.on('dragEnd', () => {
