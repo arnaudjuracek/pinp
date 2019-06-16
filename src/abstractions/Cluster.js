@@ -89,10 +89,10 @@ export default class Cluster {
         const horizontal = Math.abs(delta[0]) >= Math.abs(delta[1])
 
         if (debug) {
-          console.log('pinp.Cluster.pack', {
+          console.log({
             current: current.packingOrder,
             collide: box.packingOrder,
-            detla: delta,
+            delta,
             direction: horizontal ? 'horizontal' : 'vertical'
           })
         }
