@@ -5,7 +5,10 @@ import Box from './abstractions/Box'
 export default ({
   boxSelector = '.pinp-box',
   container = '.pinp-container',
+  debug = false,
   grid = [50, 50],
+  maxSolverIterations = 999,
+  noOOB = true,
   updateContainerWidth = true
 } = {}) => {
   container = isDomElement(container)
@@ -35,17 +38,7 @@ export default ({
 
   function update () {
     window.requestAnimationFrame(() => {
-      boxes
-        .sort((a, b) => b.lastMove - a.lastMove)
-        .forEach((box, index) => {
-          box.ID = index
-          box.write('#' + box.ID)
-          box.update()
-        })
-
-      // boxes.forEach(box => box.update())
-
-      const cluster = new Cluster(boxes)
+      const cluster = new Cluster(boxes, { debug, maxSolverIterations, noOOB })
       cluster.pack()
 
       if (updateContainerWidth) {

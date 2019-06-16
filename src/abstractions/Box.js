@@ -92,12 +92,4 @@ export default class Box {
       }
     }
   }
-
-  // DEBUG
-  write (text, append = false) {
-    this._text = append
-      ? this._text + ' ' + text
-      : text
-    this.element.innerHTML = this._text
-  }
 }

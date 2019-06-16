@@ -12,7 +12,7 @@
         font-family: monospace;
       }
 
-      .container {
+      .pinp-container {
         position: relative;
         font-size: 0;;
         user-select: none;
@@ -23,7 +23,7 @@
         padding: 50px;
       }
 
-      .box {
+      .pinp-box {
         font-size: 20px;
         display: inline-block;
         background: white;
@@ -32,11 +32,19 @@
         cursor: grab;
       }
 
-      .box:active,
-      .box.is-dragging {
+      .pinp-box:active,
+      .pinp-box.is-dragging {
         z-index: 999;
         cursor: grabbing;
         opacity: 0.8;
+      }
+
+      .pinp-box::after {
+        content: '#'attr(data-packing-order);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
       }
 
       .toolbox {
@@ -48,11 +56,11 @@
   </head>
   <body>
     <main>
-      <div class="container">
-        <div class="box" style="width: 100px; height: 100px; background-color: rgb(142,44,163)"></div>
-        <div class="box" style="width: 200px; height: 200px; background-color: rgb(0,179,149)"></div>
-        <div class="box" style="width: 50px; height: 50px; background-color: rgb(255,244,155)"></div>
-        <div class="box" style="width: 200px; height: 200px; background-color: rgb(91,3,41)"></div>
+      <div class="pinp-container">
+        <div class="pinp-box" style="width: 100px; height: 100px; background-color: rgb(142,44,163)"></div>
+        <div class="pinp-box" style="width: 200px; height: 200px; background-color: rgb(0,179,149)"></div>
+        <div class="pinp-box" style="width: 50px; height: 50px; background-color: rgb(255,244,155)"></div>
+        <div class="pinp-box" style="width: 200px; height: 200px; background-color: rgb(91,3,41)"></div>
       </div>
 
       <div class="toolbox">
@@ -66,14 +74,18 @@
     <script>
       var step = 50
       var grid = window.pinp({
-        boxSelector: '.box',
-        container: '.container',
-        grid: [step, step]
+        boxSelector: '.pinp-box',
+        container: '.pinp-container',
+        debug: true,
+        grid: [step, step],
+        maxSolverIterations: 999,
+        noOOB: true,
+        updateContainerWidth: true
       });
 
       grid.update();
 
-      var container = document.querySelector('.container');
+      var container = document.querySelector('.pinp-container');
       document.getElementById('addBox').addEventListener('click', addBox);
       document.getElementById('removeBox').addEventListener('click', removeBox);
       document.getElementById('update').addEventListener('click', grid.update);
@@ -81,7 +93,7 @@
       function addBox () {
         var containerRect = container.getBoundingClientRect();
         var box = document.createElement('div');
-        box.classList = 'box';
+        box.classList = 'pinp-box';
         box.style.backgroundColor = 'hsl('+ roundTo(Math.random() * 360, 5) +', 100%, 35%)';
         box.style.width = roundTo(step + Math.random() * 300, step) + 'px';
         box.style.height = roundTo(step + Math.random() * 300, step) + 'px';
@@ -93,7 +105,7 @@
       }
 
       function removeBox () {
-        var boxes = container.querySelectorAll('.box');
+        var boxes = container.querySelectorAll('.pinp-box');
         var index = Math.floor(Math.random() * boxes.length);
         boxes[index].remove();
         // ???: handle Box deletion

@@ -1,9 +1,15 @@
 export default class Cluster {
   constructor (boxes, {
-    noOOB = true
+    noOOB = true,
+    debug = false,
+    maxSolverIterations = 999
   } = {}) {
     this.boxes = boxes
+
     this.noOOB = noOOB
+    this.debug = debug
+    this.maxSolverIterations = maxSolverIterations
+
     this.update()
   }
 
@@ -56,7 +62,20 @@ export default class Cluster {
     this._updateBoundingBox()
   }
 
-  pack ({ maxSolverIterations = 999 } = {}) {
+  pack ({
+    maxSolverIterations = this.maxSolverIterations,
+    debug = this.debug
+  } = {}) {
+    this.boxes = this.boxes.sort((a, b) => b.lastMove - a.lastMove)
+    this.boxes.forEach((box, index) => {
+      // Get latest bounding box
+      box.update()
+      if (debug) {
+        box.packingOrder = index
+        box.element.setAttribute('data-packing-order', index)
+      }
+    })
+
     let woke = this.boxes.filter(box => this.boxes.some(box.collide))
 
     let _itercount = 0
@@ -69,7 +88,14 @@ export default class Cluster {
         const delta = current.delta(box)
         const horizontal = Math.abs(delta[0]) >= Math.abs(delta[1])
 
-        console.log(current.ID, box.ID, delta, horizontal)
+        if (debug) {
+          console.log('pinp.Cluster.pack', {
+            current: current.packingOrder,
+            collide: box.packingOrder,
+            detla: delta,
+            direction: horizontal ? 'horizontal' : 'vertical'
+          })
+        }
 
         if (horizontal && delta[0] <= 0) box.move(current.xmax, box.y)
         if (horizontal && delta[0] > 0) box.move(current.xmin - box.width, box.y)
