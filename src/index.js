@@ -6,12 +6,15 @@ import noop from './utils/noop'
 export default ({
   boxSelector = '.pinp-box',
   container = '.pinp-container',
+
   debug = false,
   grid = [50, 50],
   maxSolverIterations = 999,
   noOOB = true,
-  updateContainerWidth = true,
+  pushBehavior = 'both', // 'horizontal', 'vertical' or 'both'
   updateContainerHeight = true,
+  updateContainerWidth = true,
+
   willUpdate = noop,
   didUpdate = noop
 } = {}) => {
@@ -19,7 +22,12 @@ export default ({
     ? container
     : document.querySelector(container)
 
-  const cluster = new Cluster([], { debug, maxSolverIterations, noOOB })
+  const cluster = new Cluster([], {
+    debug,
+    maxSolverIterations,
+    noOOB,
+    pushBehavior
+  })
 
   const boxElements = container.querySelectorAll(boxSelector)
   for (let i = 0; i < boxElements.length; i++) {

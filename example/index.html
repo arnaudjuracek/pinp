@@ -83,12 +83,15 @@
       var grid = window.pinp({
         boxSelector: '.pinp-box',
         container: '.pinp-container',
+
         debug: true,
         grid: [step, step],
         maxSolverIterations: 999,
         noOOB: true,
-        updateContainerWidth: true,
+        pushBehavior: 'both',
         updateContainerHeight: false,
+        updateContainerWidth: true,
+
         willUpdate: function () {},
         didUpdate: fps.tick
       });

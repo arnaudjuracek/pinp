@@ -4,13 +4,15 @@ export default class Cluster {
   constructor (boxes, {
     noOOB = true,
     debug = false,
-    maxSolverIterations = 999
+    maxSolverIterations = 999,
+    pushBehavior = 'both' // 'horizontal', 'vertical' or 'both'
   } = {}) {
     this.boxes = boxes
 
     this.noOOB = noOOB
     this.debug = debug
     this.maxSolverIterations = maxSolverIterations
+    this.pushBehavior = pushBehavior
 
     this.update()
     autobind(this)
@@ -84,9 +86,12 @@ export default class Cluster {
     this._updateBoundingBox()
   }
 
+  // NOTE: Cluster.pack can punctually take options
+  // different than thoses passed at Cluster instanciation
   pack ({
     maxSolverIterations = this.maxSolverIterations,
-    debug = this.debug
+    debug = this.debug,
+    pushBehavior = this.pushBehavior
   } = {}) {
     // Sort all boxes from most recent moved to oldest move
     this.boxes = this.boxes.sort((a, b) => b.lastMove - a.lastMove)
@@ -112,7 +117,11 @@ export default class Cluster {
 
       colliding.forEach(box => {
         const delta = current.delta(box)
-        const horizontal = Math.abs(delta[0]) >= Math.abs(delta[1])
+        const horizontal = (pushBehavior === 'horizontal')
+          ? true
+          : (pushBehavior === 'vertical')
+            ? false
+            : Math.abs(delta[0]) >= Math.abs(delta[1])
 
         if (debug) {
           console.log({
