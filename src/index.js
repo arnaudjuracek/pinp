@@ -45,11 +45,7 @@ export default ({
   return api
 
   function add (el) {
-    const box = new Box(el, {
-      container,
-      onMove: update,
-      grid
-    })
+    const box = new Box(el, { container, debug, grid })
 
     box.dragInstance.on('dragStart', () => {
       cluster.freeze()

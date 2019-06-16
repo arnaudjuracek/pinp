@@ -4,13 +4,15 @@ import autobind from '../utils/class-autobind'
 export default class Box {
   constructor (element, {
     container = document.documentElement,
-    grid = [1, 1]
+    grid = [1, 1],
+    debug = false
   } = {}) {
     if (!element) {
       throw new TypeError(`Box constructor expects HTMLElement, ${typeof element} given`)
     }
 
     this.grid = grid
+    this.debug = debug
 
     this.element = element
     this.element.style.position = 'absolute'
@@ -45,9 +47,13 @@ export default class Box {
     if (this.frozen) return
     this.frozen = true
     this.frozenBoundingBox = this._computeBoundingBox()
+    if (this.debug) this.element.classList.add('frozen')
   }
 
-  unfreeze () { this.frozen = false }
+  unfreeze () {
+    this.frozen = false
+    if (this.debug) this.element.classList.remove('frozen')
+  }
 
   collideOnYAxis (box) {
     if (!box) return

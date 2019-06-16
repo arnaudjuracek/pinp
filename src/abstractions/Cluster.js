@@ -21,19 +21,13 @@ export default class Cluster {
   freeze () {
     if (this.frozen) return
     this.frozen = true
-    this.boxes.forEach(box => {
-      box.freeze()
-      if (this.debug) box.element.classList.add('frozen')
-    })
+    this.boxes.forEach(box => box.freeze())
   }
 
   unfreeze () {
     if (!this.frozen) return
     this.frozen = false
-    this.boxes.forEach(box => {
-      box.unfreeze()
-      if (this.debug) box.element.classList.remove('frozen')
-    })
+    this.boxes.forEach(box => box.unfreeze())
   }
 
   update () {
