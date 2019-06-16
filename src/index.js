@@ -1,18 +1,20 @@
-import Item from './abstractions/Item'
+import Cluster from './abstractions/Cluster'
 import isDomElement from './utils/object-is-dom-element'
+import Box from './abstractions/Box'
 
 export default ({
-  grid = [50, 50],
+  boxSelector = '.pinp-box',
   container = '.pinp-container',
-  itemSelector = '.pinp-item'
+  grid = [50, 50],
+  updateContainerWidth = true
 } = {}) => {
   container = isDomElement(container)
     ? container
     : document.querySelector(container)
 
-  const itemElements = container.querySelectorAll(itemSelector)
-  const items = []
-  for (let i = 0; i < itemElements.length; i++) add(itemElements[i])
+  const boxes = []
+  const boxElements = container.querySelectorAll(boxSelector)
+  for (let i = 0; i < boxElements.length; i++) add(boxElements[i])
 
   const api = {
     add,
@@ -22,70 +24,24 @@ export default ({
   return api
 
   function add (el) {
-    const item = new Item(el, {
+    const box = new Box(el, {
       container,
       onMove: update,
       grid
     })
-    items.push(item)
+    boxes.push(box)
   }
 
   function update () {
     window.requestAnimationFrame(() => {
-      updatePosition(items)
-      updateContainerSize(items)
-    })
-  }
+      boxes.forEach(box => box.update())
 
-  function updatePosition (items, forceLeft = false) {
-    const itemsSortedLeftToRight = items.sort((a, b) => a.box.xmax - b.box.xmax)
-    for (let index = 0; index < itemsSortedLeftToRight.length; index++) {
-      const current = itemsSortedLeftToRight[index]
-      const leftOfCurrent = itemsSortedLeftToRight.slice(0, index)
-      const leftOfCurrentOnSameAxis = leftOfCurrent.filter(current.collideOnXAxis.bind(current))
-      const previous = getClusterBox(leftOfCurrentOnSameAxis)
+      const cluster = new Cluster(boxes)
+      cluster.pack()
 
-      const noCollide = !itemsSortedLeftToRight.some(current.collide.bind(current))
-      if (noCollide) {
-        current.index = ''
-        continue
+      if (updateContainerWidth) {
+        container.style.width = cluster.width + 'px'
       }
-
-      current.index = index
-
-      const x = forceLeft
-        ? previous.xmax
-        : (previous.xmax || current.box.xmin)
-      current.move(x, current.box.ymin)
-    }
-  }
-
-  function getClusterBox (items) {
-    let x = 0
-    let y = 0
-    let width = 0
-    let height = 0
-
-    items.forEach(({ box }) => {
-      x = Math.min(x, box.x)
-      y = Math.min(y, box.y)
-      width = Math.max(width, box.x + box.width)
-      height = Math.max(height, box.y + box.height)
     })
-
-    return {
-      x,
-      y,
-      width,
-      height,
-      xmin: x,
-      xmax: x + width,
-      ymin: y,
-      ymax: y + height
-    }
-  }
-
-  function updateContainerSize (items) {
-    container.style.width = getClusterBox(items).width + 'px'
   }
 }

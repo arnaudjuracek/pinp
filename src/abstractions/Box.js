@@ -1,19 +1,19 @@
 import Draggabilly from 'draggabilly'
 import noop from '../utils/noop'
-import roundTo from '../utils/math-round-to'
+import autobind from '../utils/class-autobind'
 
-export default class Item {
+export default class Box {
   constructor (element, {
     container = document.documentElement,
     grid = [1, 1],
     onMove = noop
   } = {}) {
     if (!element) {
-      throw new TypeError(`Item constructor expects HTMLElement, ${typeof element} given`)
+      throw new TypeError(`Box constructor expects HTMLElement, ${typeof element} given`)
     }
 
     this.grid = grid
-    this.onMove = onMove.bind(this)
+    this.onMove = onMove
 
     this.element = element
     this.element.style.position = 'absolute'
@@ -21,36 +21,48 @@ export default class Item {
 
     this.dragInstance = new Draggabilly(element, { grid, containment: container })
     this.dragInstance.on('dragEnd', this.onMove)
+
+    autobind(this)
   }
 
   destroy () {
     this.dragInstance.destroy()
   }
 
-  collide (item) {
-    return this.collideOnXAxis(item) && this.collideOnYAxis(item)
+  collide (box) {
+    return this.collideOnXAxis(box) && this.collideOnYAxis(box)
   }
 
-  collideOnYAxis (item) {
-    if (!item) return
-    if (item === this) return false
+  collideOnYAxis (box) {
+    if (!box) return
+    if (box === this) return false
 
-    return this.box.xmax > item.box.xmin && this.box.xmin < item.box.xmax
+    return this.xmax > box.xmin && this.xmin < box.xmax
   }
 
-  collideOnXAxis (item) {
-    if (!item) return
-    if (item === this) return false
+  collideOnXAxis (box) {
+    if (!box) return
+    if (box === this) return false
 
-    return this.box.ymax > item.box.ymin && this.box.ymin < item.box.ymax
+    return this.ymax > box.ymin && this.ymin < box.ymax
   }
 
   move (x, y) {
     if (this.isDragged) return
     this.dragInstance.setPosition(x, y)
+    this.update()
   }
 
-  get box () {
+  update () {
+    this.boundingBox = this._computeBoundingBox()
+    // NOTE: in addition to Box.boundingBox,
+    // all boundingBox keys are accessible directly via Box[key]
+    Object.entries(this.boundingBox).forEach(([key, value]) => { this[key] = value })
+  }
+
+  // WARNING: due to Element.getBoundingClientRect causing layout repaint,
+  // Box.boundingBox is memoized and only recomputed on Box.update call
+  _computeBoundingBox () {
     const { width, height } = this.element.getBoundingClientRect()
     const x = this.dragInstance.position.x
     const y = this.dragInstance.position.y
@@ -70,12 +82,7 @@ export default class Item {
     }
   }
 
-  get index () { return this._index }
-  set index (i) { // DEBUG
-    this._index = i
-    this.element.innerHTML = `#${i}`
-  }
-
+  // DEBUG
   write (text, append = false) {
     this._text = append
       ? this._text + ' ' + text
