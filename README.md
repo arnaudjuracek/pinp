@@ -6,13 +6,13 @@
 
 ## Installation
 
-```sh
+```console
 $ npm install --save pinp
 ```
 
 ## Usage
 
-##### Usage with a module bundler
+##### Import with a module bundler
 ```js
 // using ES6 module
 import pinp from 'pinp'
@@ -21,22 +21,53 @@ import pinp from 'pinp'
 var pinp = require('pinp')
 ```
 
-##### Usage from a browser
+##### Import from a browser
 
 ```html
 <script src="https://unpkg.com/pinp"></script>
 <script>
-  window.pinp()
+  // window.pinp is exposed
 </script>
 ```
+
+##### API
+
+```js
+const options = {
+  container: '.pinp-container' // can be HTMLElement or string selector
+  debug: false
+  grid: [50, 50],
+  maxSolverIterations: 999, 
+  noOOB: true,
+  pushBehavior: 'both', // 'horizontal', 'vertical' or 'both'
+  updateContainerHeight: true,
+  updateContainerWidth: true,
+
+  willUpdate: function () {}, 
+  didUpdate: function () {}
+}
+
+const grid = pinp(options)
+
+const element = document.getElementById('myElement')
+
+grid.add(element)
+grid.update()
+
+console.log(grid.width)
+console.log(grid.height)
+console.log(grid.boxes.length)
+```
+<sup>See [`example`](example/) for a detailed implementation.</sup>
 
 ## Development
 ```console
 $ npm install     # install all npm dependencies
 $ npm run start   # start the dev server with livereload on the example folder
 $ npm run build   # bundle your library in CJS / UMD / ESM
-$ npm run deploy  # deploy your example folder on a gh-page branch
 $ npm run test    # lint your js inside the src folder
+
+$ npm version [major|minor|patch] # bundle, create a new release, publish to npm and deploy example/ to gh-page
 ``` 
 
 ## License
