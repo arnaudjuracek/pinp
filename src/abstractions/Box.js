@@ -1,19 +1,16 @@
 import Draggabilly from 'draggabilly'
-import noop from '../utils/noop'
 import autobind from '../utils/class-autobind'
 
 export default class Box {
   constructor (element, {
     container = document.documentElement,
-    grid = [1, 1],
-    onMove = noop
+    grid = [1, 1]
   } = {}) {
     if (!element) {
       throw new TypeError(`Box constructor expects HTMLElement, ${typeof element} given`)
     }
 
     this.grid = grid
-    this.onMove = onMove
 
     this.element = element
     this.element.style.position = 'absolute'
@@ -22,8 +19,9 @@ export default class Box {
     this.lastMove = Date.now()
 
     this.dragInstance = new Draggabilly(element, { grid, containment: container })
+    this.dragInstance.on('dragStart', () => { this.isDragging = true })
     this.dragInstance.on('dragMove', () => { this.lastMove = Date.now() })
-    this.dragInstance.on('dragEnd', this.onMove)
+    this.dragInstance.on('dragEnd', () => { this.isDragging = false })
 
     autobind(this)
   }
@@ -43,6 +41,14 @@ export default class Box {
     ]
   }
 
+  freeze () {
+    if (this.frozen) return
+    this.frozen = true
+    this.frozenBoundingBox = this._computeBoundingBox()
+  }
+
+  unfreeze () { this.frozen = false }
+
   collideOnYAxis (box) {
     if (!box) return
     if (box === this) return false
@@ -58,7 +64,8 @@ export default class Box {
   }
 
   move (x, y) {
-    if (this.isDragged) return
+    if (this.isDragging) return
+
     this.dragInstance.setPosition(x, y)
     this.lastMove = Date.now()
     this.update()
@@ -66,9 +73,11 @@ export default class Box {
 
   update () {
     this.boundingBox = this._computeBoundingBox()
-    // NOTE: in addition to Box.boundingBox,
-    // all boundingBox keys are accessible directly via Box[key]
-    Object.entries(this.boundingBox).forEach(([key, value]) => { this[key] = value })
+
+    // NOTE: in addition to Box.boundingBox, all boundingBox keys are accessible directly via Box[key]
+    Object.keys(this.boundingBox).forEach(key => {
+      this[key] = this.boundingBox[key]
+    })
   }
 
   // WARNING: due to Element.getBoundingClientRect causing layout repaint,
@@ -77,7 +86,7 @@ export default class Box {
     const { width, height } = this.element.getBoundingClientRect()
     const x = this.dragInstance.position.x
     const y = this.dragInstance.position.y
-    return {
+    return Object.freeze({
       x,
       y,
       width,
@@ -90,6 +99,6 @@ export default class Box {
         x: x + width / 2,
         y: y + height / 2
       }
-    }
+    })
   }
 }

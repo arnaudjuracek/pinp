@@ -32,7 +32,11 @@
         cursor: grab;
       }
 
-      .pinp-box:active,
+      .pinp-box.frozen {
+        outline: 2px dotted white;
+      }
+
+      .pinp-box.is-pointer-down,
       .pinp-box.is-dragging {
         z-index: 999;
         cursor: grabbing;
@@ -70,8 +74,11 @@
       </div>
     </main>
 
+    <script src="https://unpkg.com/fpsmeter"></script>
     <script src="pinp.umd.js"></script>
     <script>
+      var fps = new FPSMeter({ left: 'auto', right: 0 });
+
       var step = 50
       var grid = window.pinp({
         boxSelector: '.pinp-box',
@@ -80,7 +87,10 @@
         grid: [step, step],
         maxSolverIterations: 999,
         noOOB: true,
-        updateContainerWidth: true
+        updateContainerWidth: true,
+        updateContainerHeight: false,
+        willUpdate: function () {},
+        didUpdate: fps.tick
       });
 
       grid.update();

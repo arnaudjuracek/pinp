@@ -1,3 +1,5 @@
+import autobind from '../utils/class-autobind'
+
 export default class Cluster {
   constructor (boxes, {
     noOOB = true,
@@ -11,9 +13,29 @@ export default class Cluster {
     this.maxSolverIterations = maxSolverIterations
 
     this.update()
+    autobind(this)
+  }
+
+  freeze () {
+    if (this.frozen) return
+    this.frozen = true
+    this.boxes.forEach(box => {
+      box.freeze()
+      if (this.debug) box.element.classList.add('frozen')
+    })
+  }
+
+  unfreeze () {
+    if (!this.frozen) return
+    this.frozen = false
+    this.boxes.forEach(box => {
+      box.unfreeze()
+      if (this.debug) box.element.classList.remove('frozen')
+    })
   }
 
   update () {
+    if (this.frozen) return
     this._updateBoundingBox()
     if (this.noOOB) this.ensureInBounds()
   }
@@ -66,19 +88,23 @@ export default class Cluster {
     maxSolverIterations = this.maxSolverIterations,
     debug = this.debug
   } = {}) {
+    // Sort all boxes from most recent moved to oldest move
     this.boxes = this.boxes.sort((a, b) => b.lastMove - a.lastMove)
+
     this.boxes.forEach((box, index) => {
-      // Get latest bounding box
-      box.update()
+      // As we want to preserve the frozen state upon packing,
+      // we ensure that the box will stay where it has been frozen
+      if (box.frozen) box.move(box.frozenBoundingBox.x, box.frozenBoundingBox.y)
+      else box.update()
+
       if (debug) {
         box.packingOrder = index
         box.element.setAttribute('data-packing-order', index)
       }
     })
 
-    let woke = this.boxes.filter(box => this.boxes.some(box.collide))
-
     let _itercount = 0
+    let woke = this.boxes.filter(box => this.boxes.some(box.collide))
     while (woke.length && ++_itercount < maxSolverIterations) {
       const current = woke.shift()
       const colliding = this.boxes.filter(current.collide)
