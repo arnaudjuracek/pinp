@@ -16,7 +16,7 @@
     "test": "eslint src/**",
     "deploy": "ghp example",
     "preversion": "npm run build && git add dist",
-    "postversion": "git push && git push --tags && yarn deploy --force"
+    "postversion": "git push && git push --tags && npm run deploy -- --force && npm publish"
   },
   "repository": {
     "type": "git",
