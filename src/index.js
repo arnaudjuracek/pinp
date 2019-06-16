@@ -29,12 +29,21 @@ export default ({
       onMove: update,
       grid
     })
+
     boxes.push(box)
   }
 
   function update () {
     window.requestAnimationFrame(() => {
-      boxes.forEach(box => box.update())
+      boxes
+        .sort((a, b) => b.lastMove - a.lastMove)
+        .forEach((box, index) => {
+          box.ID = index
+          box.write('#' + box.ID)
+          box.update()
+        })
+
+      // boxes.forEach(box => box.update())
 
       const cluster = new Cluster(boxes)
       cluster.pack()

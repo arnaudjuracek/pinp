@@ -19,7 +19,10 @@ export default class Box {
     this.element.style.position = 'absolute'
     this.container = container
 
+    this.lastMove = Date.now()
+
     this.dragInstance = new Draggabilly(element, { grid, containment: container })
+    this.dragInstance.on('dragMove', () => { this.lastMove = Date.now() })
     this.dragInstance.on('dragEnd', this.onMove)
 
     autobind(this)
@@ -31,6 +34,13 @@ export default class Box {
 
   collide (box) {
     return this.collideOnXAxis(box) && this.collideOnYAxis(box)
+  }
+
+  delta (box) {
+    return [
+      this.center.x - box.center.x,
+      this.center.y - box.center.y
+    ]
   }
 
   collideOnYAxis (box) {
@@ -50,6 +60,7 @@ export default class Box {
   move (x, y) {
     if (this.isDragged) return
     this.dragInstance.setPosition(x, y)
+    this.lastMove = Date.now()
     this.update()
   }
 

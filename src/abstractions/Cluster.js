@@ -1,10 +1,18 @@
 export default class Cluster {
-  constructor (boxes) {
+  constructor (boxes, {
+    noOOB = true
+  } = {}) {
     this.boxes = boxes
+    this.noOOB = noOOB
     this.update()
   }
 
   update () {
+    this._updateBoundingBox()
+    if (this.noOOB) this.ensureInBounds()
+  }
+
+  _updateBoundingBox () {
     const bb = Cluster.computeBoundingBox(this.boxes)
     Object.entries(bb).forEach(([key, value]) => {
       this[key] = value
@@ -38,20 +46,38 @@ export default class Cluster {
     }
   }
 
-  pack () {
-    const boxesLeftToRight = this.boxes.sort((a, b) => a.xmax - b.xmax)
+  // TODO: for now, only top and left boundaries are taken in account
+  ensureInBounds () {
+    const dx = -Math.min(0, this.xmin)
+    const dy = -Math.min(0, this.ymin)
 
-    boxesLeftToRight.forEach((current, index) => {
-      const hasCollisions = this.boxes.some(current.collide)
-      if (!hasCollisions) return
+    if (!dx && !dy) return
+    this.boxes.forEach(box => box.move(box.x + dx, box.y + dy))
+    this._updateBoundingBox()
+  }
 
-      const boxesOnLeft = boxesLeftToRight.slice(0, index)
-      const boxesOnLeftOnSameAxis = boxesOnLeft.filter(current.collideOnXAxis.bind(current))
-      const leftCluster = new Cluster(boxesOnLeftOnSameAxis)
+  pack ({ maxSolverIterations = 999 } = {}) {
+    let woke = this.boxes.filter(box => this.boxes.some(box.collide))
 
-      const x = (leftCluster.xmax || current.xmin)
-      current.move(x, current.y)
-    })
+    let _itercount = 0
+    while (woke.length && ++_itercount < maxSolverIterations) {
+      const current = woke.shift()
+      const colliding = this.boxes.filter(current.collide)
+      if (!colliding || !colliding.length) continue
+
+      colliding.forEach(box => {
+        const delta = current.delta(box)
+        const horizontal = Math.abs(delta[0]) >= Math.abs(delta[1])
+
+        console.log(current.ID, box.ID, delta, horizontal)
+
+        if (horizontal && delta[0] <= 0) box.move(current.xmax, box.y)
+        if (horizontal && delta[0] > 0) box.move(current.xmin - box.width, box.y)
+        if (!horizontal && delta[1] <= 0) box.move(box.x, current.ymax)
+        if (!horizontal && delta[1] > 0) box.move(box.x, current.ymin - box.height)
+        woke.push(box)
+      })
+    }
 
     this.update()
   }
