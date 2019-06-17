@@ -40,8 +40,8 @@ export default ({
 
   return api
 
-  function add (DomElement) {
-    const box = new Box(DomElement, { container, debug, grid })
+  function add (DomElement, draggabillyAdditionalOptions = {}) {
+    const box = new Box(DomElement, { container, debug, grid, draggabillyAdditionalOptions })
 
     box.dragInstance.on('dragStart', () => {
       setLastDragged(box)

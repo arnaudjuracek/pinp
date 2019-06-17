@@ -52,7 +52,8 @@ const options = {
 const grid = pinp(options)
 
 const element = document.getElementById('myElement')
-const box = grid.add(element)
+const addtionalDragabillyOptions = { handle: '.handle' }
+const box = grid.add(element, addtionalDragabillyOptions)
 box.dragInstance.on('dragStart', () => console.log('the box moves'))
 
 grid.update()

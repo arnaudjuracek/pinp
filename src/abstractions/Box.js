@@ -5,7 +5,8 @@ export default class Box {
   constructor (element, {
     container = document.documentElement,
     grid = [1, 1],
-    debug = false
+    debug = false,
+    draggabillyAdditionalOptions = {}
   } = {}) {
     if (!element) {
       throw new TypeError(`Box constructor expects HTMLElement, ${typeof element} given`)
@@ -20,7 +21,9 @@ export default class Box {
 
     this.lastMove = Date.now()
 
-    this.dragInstance = new Draggabilly(element, { grid, containment: container })
+    const draggabillyOptions = Object.assign({}, draggabillyAdditionalOptions, { grid, containment: container })
+    this.dragInstance = new Draggabilly(element, draggabillyOptions)
+
     this.dragInstance.on('dragStart', () => { this.isDragging = true })
     this.dragInstance.on('dragMove', () => { this.lastMove = Date.now() })
     this.dragInstance.on('dragEnd', () => { this.isDragging = false })
