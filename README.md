@@ -34,8 +34,8 @@ var pinp = require('pinp')
 
 ```js
 const options = {
-  container: '.pinp-container' // can be HTMLElement or string selector
-  debug: false
+  container: '.pinp-container', // can be HTMLElement or string selector
+  debug: false,
   grid: [50, 50],
   maxSolverIterations: 999, 
   noOOB: true,
@@ -50,9 +50,11 @@ const options = {
 const grid = pinp(options)
 
 const element = document.getElementById('myElement')
+const box = grid.add(element)
+box.dragInstance.on('dragStart', () => console.log('the box moves'))
 
-grid.add(element)
 grid.update()
+grid.remove(box)
 
 console.log(grid.width)
 console.log(grid.height)
