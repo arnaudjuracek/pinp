@@ -14,6 +14,8 @@ export default ({
   updateContainerHeight = true,
   updateContainerWidth = true,
 
+  lastDraggedClassname = 'last-dragged',
+
   willUpdate = noop,
   didUpdate = noop
 } = {}) => {
@@ -41,7 +43,10 @@ export default ({
   function add (DomElement) {
     const box = new Box(DomElement, { container, debug, grid })
 
-    box.dragInstance.on('dragStart', cluster.freeze)
+    box.dragInstance.on('dragStart', () => {
+      setLastDragged(box)
+      cluster.freeze()
+    })
 
     box.dragInstance.on('dragMove', () => {
       window.requestAnimationFrame(() => {
@@ -78,5 +83,16 @@ export default ({
       if (updateContainerHeight) container.style.height = cluster.ymax + 'px'
       didUpdate()
     })
+  }
+
+  function setLastDragged (box) {
+    if (!box) return
+
+    const lastDragged = container.querySelectorAll(`.${lastDraggedClassname}`)
+    for (let i = 0; i < lastDragged.length; i++) {
+      lastDragged[i].classList.remove(lastDraggedClassname)
+    }
+
+    box.element.classList.add(lastDraggedClassname)
   }
 }

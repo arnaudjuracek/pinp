@@ -14,7 +14,7 @@
 
       .pinp-container {
         position: relative;
-        font-size: 0;;
+        font-size: 0;
         user-select: none;
         display: block;
         min-width: 80%;
@@ -24,8 +24,8 @@
       }
 
       .pinp-box {
-        font-size: 20px;
         display: inline-block;
+        font-size: 20px;
         background: white;
         width: 100px;
         height: 100px;
@@ -46,6 +46,7 @@
       .pinp-box::after {
         content: '#'attr(data-packing-order);
         position: absolute;
+        text-align: center;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
@@ -92,6 +93,8 @@
         pushBehavior: 'both',
         updateContainerHeight: false,
         updateContainerWidth: true,
+
+        lastDraggedClassname: 'last-dragged',
 
         willUpdate: function () {},
         didUpdate: fps.tick

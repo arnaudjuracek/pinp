@@ -43,6 +43,8 @@ const options = {
   updateContainerHeight: true,
   updateContainerWidth: true,
 
+  lastDraggedClassname: 'last-dragged',
+ 
   willUpdate: function () {}, 
   didUpdate: function () {}
 }
