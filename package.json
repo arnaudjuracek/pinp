@@ -11,7 +11,7 @@
     "dist"
   ],
   "scripts": {
-    "start": "microbundle watch -f umd -o example --target web --compress false & light-server -s example -p 8080 -w example/**/*",
+    "start": "microbundle watch -f umd -o example --target web --external all & light-server -s example -p 8080 -w example/**/*",
     "build": "microbundle -f es,cjs --external all && microbundle -f umd --target web",
     "test": "eslint src/**",
     "deploy": "ghp example",
