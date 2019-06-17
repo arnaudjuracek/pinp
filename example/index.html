@@ -98,10 +98,8 @@
       });
 
       var boxes = container.querySelectorAll('.pinp-box')
-      var pinpBoxes = []
       for (var index = 0; index < boxes.length; index++) {
-        var box = grid.add(boxes[index])
-        pinpBoxes.push(box)
+        grid.add(boxes[index])
       }
 
       grid.update();
@@ -125,10 +123,10 @@
       }
 
       function removeBox () {
-        var boxes = container.querySelectorAll('.pinp-box');
-        var index = Math.floor(Math.random() * boxes.length);
-        boxes[index].remove();
-        // ???: handle Box deletion
+        var index = Math.floor(Math.random() * grid.boxes.length);
+        var pinpBox = grid.boxes[index];
+        grid.remove(pinpBox)
+        pinpBox.element.remove()
         grid.update();
       }
 

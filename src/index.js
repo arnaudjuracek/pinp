@@ -19,7 +19,7 @@ export default ({
 } = {}) => {
   container = isDomElement(container) ? container : document.querySelector(container)
 
-  const cluster = new Cluster([], {
+  const cluster = new Cluster({
     debug,
     maxSolverIterations,
     noOOB,
@@ -28,6 +28,7 @@ export default ({
 
   const api = {
     add,
+    remove,
     update,
     get boxes () { return cluster.boxes },
     get width () { return cluster.xmax },
@@ -56,9 +57,15 @@ export default ({
       update()
     })
 
-    cluster.boxes.push(box)
-
+    cluster.add(box)
     return box
+  }
+
+  function remove (box) {
+    if (isDomElement(box)) {
+      box = cluster.boxes.find(b => b.element === box)
+    }
+    cluster.remove(box)
   }
 
   function update () {

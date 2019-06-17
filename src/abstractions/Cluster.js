@@ -1,13 +1,14 @@
+import Box from './Box'
 import autobind from '../utils/class-autobind'
 
 export default class Cluster {
-  constructor (boxes, {
+  constructor ({
     noOOB = true,
     debug = false,
     maxSolverIterations = 999,
     pushBehavior = 'both' // 'horizontal', 'vertical' or 'both'
   } = {}) {
-    this.boxes = boxes
+    this.boxes = []
 
     this.noOOB = noOOB
     this.debug = debug
@@ -16,6 +17,25 @@ export default class Cluster {
 
     this.update()
     autobind(this)
+  }
+
+  add (box) {
+    if (!(box instanceof Box)) {
+      throw new TypeError(`Expecting a pinp.Box instance but got ${box}`)
+    }
+    this.boxes.push(box)
+  }
+
+  remove (box) {
+    if (!(box instanceof Box)) {
+      throw new TypeError(`Expecting a pinp.Box instance but got ${box}`)
+    }
+
+    const index = this.boxes.indexOf(box)
+    if (index > -1) {
+      box.destroy()
+      this.boxes.splice(index, 1)
+    }
   }
 
   freeze () {
