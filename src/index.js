@@ -57,6 +57,8 @@ export default ({
     })
 
     cluster.boxes.push(box)
+
+    return box
   }
 
   function update () {

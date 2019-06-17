@@ -98,9 +98,12 @@
       });
 
       var boxes = container.querySelectorAll('.pinp-box')
+      var pinpBoxes = []
       for (var index = 0; index < boxes.length; index++) {
-        grid.add(boxes[index])
+        var box = grid.add(boxes[index])
+        pinpBoxes.push(box)
       }
+
       grid.update();
 
       document.getElementById('addBox').addEventListener('click', addBox);
