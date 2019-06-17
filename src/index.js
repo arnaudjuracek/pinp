@@ -18,6 +18,7 @@ export default ({
   didUpdate = noop
 } = {}) => {
   container = isDomElement(container) ? container : document.querySelector(container)
+  if (!container) throw new Error('Cannot find container')
 
   const cluster = new Cluster({
     debug,
