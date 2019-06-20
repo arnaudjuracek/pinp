@@ -3,9 +3,7 @@ import isDomElement from './utils/object-is-dom-element'
 import Box from './abstractions/Box'
 import noop from './utils/noop'
 
-export default ({
-  container = '.pinp-container',
-
+export default (container, {
   debug = false,
   grid = [0, 0],
   maxSolverIterations = 999,
