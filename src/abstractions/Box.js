@@ -9,7 +9,7 @@ export default class Box {
     draggabillyAdditionalOptions = {}
   } = {}) {
     if (!element) {
-      throw new TypeError(`Box constructor expects HTMLElement, ${typeof element} given`)
+      throw new TypeError(`pinp.Box constructor expects HTMLElement, ${typeof element} given`)
     }
 
     this.grid = grid
@@ -29,6 +29,14 @@ export default class Box {
     this.dragInstance.on('dragEnd', () => { this.isDragging = false })
 
     autobind(this)
+  }
+
+  static isBox (object) {
+    return object instanceof Box
+  }
+
+  static TypeError (object) {
+    return new TypeError(`Expecting a pinp.Box instance but got ${object}`)
   }
 
   destroy () {

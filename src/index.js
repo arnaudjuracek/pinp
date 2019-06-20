@@ -7,12 +7,15 @@ export default ({
   container = '.pinp-container',
 
   debug = false,
-  grid = [50, 50],
+  grid = [0, 0],
   maxSolverIterations = 999,
-  noOOB = true,
-  pushBehavior = 'both', // 'horizontal', 'vertical' or 'both'
-  updateContainerHeight = true,
-  updateContainerWidth = true,
+  boundaries = {
+    top: 'none', // 'none', 'soft', 'hard'
+    left: 'none',
+    right: 'none',
+    bottom: 'none'
+  },
+  pushDirection = 'both', // 'horizontal', 'vertical' or 'both'
 
   lastDraggedClassname = 'last-dragged',
 
@@ -23,10 +26,11 @@ export default ({
   if (!container) throw new Error('Cannot find container')
 
   const cluster = new Cluster({
+    container,
     debug,
     maxSolverIterations,
-    noOOB,
-    pushBehavior
+    boundaries,
+    pushDirection
   })
 
   const api = {
@@ -79,8 +83,18 @@ export default ({
       willUpdate()
       cluster.pack()
 
-      if (updateContainerWidth) container.style.width = cluster.xmax + 'px'
-      if (updateContainerHeight) container.style.height = cluster.ymax + 'px'
+      const dx = boundaries['left'] === 'soft' ? -cluster.x : 0
+      const dy = boundaries['top'] === 'soft' ? -cluster.y : 0
+      cluster.move(dx, dy)
+
+      if (boundaries['left'] === 'soft' || boundaries['right'] === 'soft') {
+        container.style.width = cluster.width + 'px'
+      }
+
+      if (boundaries['top'] === 'soft' || boundaries['bottom'] === 'soft') {
+        container.style.height = cluster.height + 'px'
+      }
+
       didUpdate()
     })
   }

@@ -89,10 +89,13 @@
         debug: true,
         grid: [step, step],
         maxSolverIterations: 999,
-        noOOB: true,
-        pushBehavior: 'both',
-        updateContainerHeight: false,
-        updateContainerWidth: true,
+        boundaries: {
+          top: 'hard', // 'none', 'soft', 'hard'
+          left: 'soft',
+          right: 'soft',
+          bottom: 'hard'
+        },
+        pushDirection: 'both', // 'horizontal', 'vertical' or 'both'
 
         lastDraggedClassname: 'last-dragged',
 

@@ -1,7 +1,6 @@
 # `pinp`
 > `pinp` is not packery
 
-
 <br>
 
 ## Installation
@@ -36,13 +35,16 @@ var pinp = require('pinp')
 const options = {
   container: '.pinp-container', // can be HTMLElement or string selector
   debug: false,
-  grid: [50, 50],
+  grid: [0, 0],
   maxSolverIterations: 999, 
-  noOOB: true,
-  pushBehavior: 'both', // 'horizontal', 'vertical' or 'both'
-  updateContainerHeight: true,
-  updateContainerWidth: true,
-
+  boundaries: {
+    top: 'none', // 'none', 'soft', 'hard'
+    left: 'none',
+    right: 'none',
+    bottom: 'none'
+  },
+  pushDirection: 'both', // 'horizontal', 'vertical' or 'both'
+  
   lastDraggedClassname: 'last-dragged',
  
   willUpdate: function () {}, 
