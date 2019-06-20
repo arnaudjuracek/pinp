@@ -1,13 +1,13 @@
 # API
 
 ## Table of contents
-- [`<pinp> = pinp(container, [options])`](#--pinpcontainer-options)
-- [`box = <pinp>.add(element, [draggabilyOptions])`](#--addelement-draggabilyoptions)
-- [`<pinp>.remove(box)`](#removebox)
-- [`<pinp>.update()`](#update)
-- [`<pinp>.width`](#width)
-- [`<pinp>.height`](#height)
-- [`<pinp>.boxes`](#boxes)
+- [`<pinp> = pinp(container, [options])`](#pinp--pinpcontainer-options)
+- [`box = <pinp>.add(element, [draggabilyOptions])`](#pinpbox--pinpaddelement-draggabilyoptions)
+- [`<pinp>.remove(box)`](#pinpremovebox)
+- [`<pinp>.update()`](#pinpupdate)
+- [`<pinp>.width`](#pinpwidth)
+- [`<pinp>.height`](#pinpheight)
+- [`<pinp>.boxes`](#pinpboxes)
 
 <br>
 
