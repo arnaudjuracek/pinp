@@ -1,0 +1,142 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>PINP | PINP is not packery</title>
+    <meta name="description" content="PINP is not packery">
+    <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,minimal-ui">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css" />
+
+    <style type="text/css">
+      body {
+        background-color: #333;
+        font-family: monospace;
+      }
+
+      .pinp-container {
+        position: relative;
+        font-size: 0;
+        user-select: none;
+        display: block;
+        min-width: 80%;
+        height: 80%;
+        border: 1px dotted white;
+        padding: 50px;
+      }
+
+      .pinp-box {
+        display: inline-block;
+        font-size: 20px;
+        background: white;
+        width: 100px;
+        height: 100px;
+        cursor: grab;
+      }
+
+      .pinp-box.frozen {
+        outline: 2px dotted white;
+      }
+
+      .pinp-box.is-pointer-down,
+      .pinp-box.is-dragging {
+        z-index: 999;
+        cursor: grabbing;
+        opacity: 0.8;
+      }
+
+      .pinp-box::after {
+        content: '#'attr(data-packing-order);
+        position: absolute;
+        text-align: center;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      .toolbox {
+        position: fixed;
+        top: 0;
+        left: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="pinp-container">
+        <div class="pinp-box" style="width: 100px; height: 100px; background-color: rgb(142,44,163)"></div>
+        <div class="pinp-box" style="width: 200px; height: 200px; background-color: rgb(0,179,149)"></div>
+        <div class="pinp-box" style="width: 50px; height: 50px; background-color: rgb(255,244,155)"></div>
+        <div class="pinp-box" style="width: 200px; height: 200px; background-color: rgb(91,3,41)"></div>
+      </div>
+
+      <div class="toolbox">
+        <button id='addBox'>add</button>
+        <button id='removeBox'>remove</button>
+        <button id='update'>update</button>
+      </div>
+    </main>
+
+    <script src="https://unpkg.com/fpsmeter"></script>
+    <script src="pinp.umd.js"></script>
+    <script>
+      var fps = new FPSMeter({ left: 'auto', right: 0 });
+
+      var container = document.querySelector('.pinp-container');
+
+      var step = 50;
+      var grid = window.pinp(container, {
+        debug: true,
+        grid: [step, step],
+        maxSolverIterations: 999,
+        boundaries: {
+          top: 'hard', // 'none', 'soft', 'hard'
+          left: 'soft',
+          right: 'soft',
+          bottom: 'hard'
+        },
+        pushDirection: 'both', // 'horizontal', 'vertical' or 'both'
+
+        lastDraggedClassname: 'last-dragged',
+
+        willUpdate: function () {},
+        didUpdate: fps.tick
+      });
+
+      var boxes = container.querySelectorAll('.pinp-box')
+      for (var index = 0; index < boxes.length; index++) {
+        grid.add(boxes[index])
+      }
+
+      grid.update();
+
+      document.getElementById('addBox').addEventListener('click', addBox);
+      document.getElementById('removeBox').addEventListener('click', removeBox);
+      document.getElementById('update').addEventListener('click', grid.update);
+
+      function addBox () {
+        var box = document.createElement('div');
+        box.classList = 'pinp-box';
+        box.style.backgroundColor = 'hsl('+ roundTo(Math.random() * 360, 5) +', 100%, 35%)';
+        box.style.width = roundTo(step + Math.random() * 300, step) + 'px';
+        box.style.height = roundTo(step + Math.random() * 300, step) + 'px';
+        box.style.left = roundTo(Math.random() * grid.width, step) + 'px';
+        box.style.top = roundTo(Math.random() * grid.height, step) + 'px';
+        container.appendChild(box);
+
+        grid.add(box);
+        grid.update();
+      }
+
+      function removeBox () {
+        var index = Math.floor(Math.random() * grid.boxes.length);
+        var pinpBox = grid.boxes[index];
+        grid.remove(pinpBox)
+        pinpBox.element.remove()
+        grid.update();
+      }
+
+      function roundTo (value, nearest) {
+        return Math.round(value / nearest) * nearest;
+      }
+    </script>
+  </body>
+</html>
