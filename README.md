@@ -3,15 +3,13 @@
 
 <br>
 
-## Installation
+## Usage
+##### Import with a module bundler
 
 ```console
 $ npm install --save pinp
 ```
 
-## Usage
-
-##### Import with a module bundler
 ```js
 // using ES6 module
 import pinp from 'pinp'
@@ -29,43 +27,24 @@ var pinp = require('pinp')
 </script>
 ```
 
-##### API
-
+### Quickstart
 ```js
-const options = {
-  container: '.pinp-container', // can be HTMLElement or string selector
-  debug: false,
-  grid: [0, 0],
-  maxSolverIterations: 999, 
-  boundaries: {
-    top: 'none', // 'none', 'soft', 'hard'
-    left: 'none',
-    right: 'none',
-    bottom: 'none'
-  },
-  pushDirection: 'both', // 'horizontal', 'vertical' or 'both'
-  
-  lastDraggedClassname: 'last-dragged',
- 
-  willUpdate: function () {}, 
-  didUpdate: function () {}
+import pinp from 'pinp'
+
+const grid = pinp('.pinp-container')
+
+const elements = document.querySelectorAll('.pinp-element')
+for (let i = 0; i < elements.length; i++) {
+  grid.add(elements[i])
 }
 
-const grid = pinp(options)
-
-const element = document.getElementById('myElement')
-const addtionalDragabillyOptions = { handle: '.handle' }
-const box = grid.add(element, addtionalDragabillyOptions)
-box.dragInstance.on('dragStart', () => console.log('the box moves'))
-
 grid.update()
-grid.remove(box)
-
-console.log(grid.width)
-console.log(grid.height)
-console.log(grid.boxes.length)
 ```
 <sup>See [`example`](example/) for a detailed implementation.</sup>
+
+## API
+
+See [docs/API](docs/API.md).
 
 ## Development
 ```console
